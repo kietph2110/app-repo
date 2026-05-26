@@ -17,9 +17,6 @@ app.get('/health', (req, res) => {
 
 app.listen(port, () => {
   console.log(`App listening at http://localhost:${port}`);
-  // Tiêm mã độc: Cố tình ném ra lỗi để sập server ngay lúc khởi động
-throw new Error('Lỗi giả lập để test giao diện UI Rollback!');
-app.listen(port, () => {
-  console.log(`App listening at http://localhost:${port}`);
+  
 });
 //TEST CI FLOW
