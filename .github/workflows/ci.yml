@@ -2,55 +2,42 @@ name: CI/CD Pipeline
 
 on:
   push:
-    branches:
-      - main
-    paths-ignore:
-      - '.github/**' # Tránh chạy lại luồng nếu chỉ sửa file cấu hình này
+    branches: [ main ]
 
 jobs:
-  build-and-update:
+  build-and-push:
     runs-on: ubuntu-latest
     steps:
-      # 1. Kéo mã nguồn app-repo về môi trường chạy
-      - name: Checkout App Code
-        uses: actions/checkout@v4
-
-      # 2. Đăng nhập vào Docker Hub
+      - uses: actions/checkout@v4
+      
       - name: Login to Docker Hub
         uses: docker/login-action@v3
         with:
-          username: ${{ secrets.DOCKER_USERNAME }}
-          password: ${{ secrets.DOCKER_PASSWORD }}
-
-      # 3. Build Docker Image và Push lên Docker Hub (dùng mã commit làm tag)
-      - name: Build and Push Docker Image
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+          
+      - name: Build and push
         uses: docker/build-push-action@v5
         with:
           context: .
           push: true
-          tags: kietph2110/myapp:${{ github.sha }}
+          tags: ${{ secrets.DOCKERHUB_USERNAME }}/myapp:latest, ${{ secrets.DOCKERHUB_USERNAME }}/myapp:${{ github.sha }}
 
-      # 4. Kéo kho gitops-config về để chuẩn bị sửa file yaml
-      - name: Checkout Config Repo
+  update-config:
+    needs: build-and-push
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout config repo
         uses: actions/checkout@v4
         with:
           repository: kietph2110/gitops-config
           token: ${{ secrets.PAT_TOKEN }}
-          path: gitops-config
-
-      # 5. Tìm và thay thế tag image cũ bằng tag mới, sau đó Push ngược lên
-      - name: Update Image Tag in Deployment
+          
+      - name: Update image tag in deployment.yaml
         run: |
-          cd gitops-config
-          
-          # Lệnh sed tìm dòng chứa "image: kietph2110/myapp:" và thay bằng tag mới
-          sed -i "s|image: kietph2110/myapp:.*|image: kietph2110/myapp:${{ github.sha }}|g" deployment.yaml
-          
-          # Cấu hình danh tính bot để commit
-          git config user.name "GitHub Actions Bot"
+          sed -i "s|image: ${{ secrets.DOCKERHUB_USERNAME }}/myapp:.*|image: ${{ secrets.DOCKERHUB_USERNAME }}/myapp:${{ github.sha }}|g" deployment.yaml
+          git config user.name "GitHub Actions"
           git config user.email "actions@github.com"
-          
-          # Đẩy sự thay đổi lên kho gitops-config
           git add deployment.yaml
-          git commit -m "Auto-update image to ${{ github.sha }}"
-          git push origin main
+          git commit -m "CD: Cập nhật image tag lên ${{ github.sha }}"
+          git push
