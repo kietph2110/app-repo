@@ -7,7 +7,7 @@ const VERSION = process.env.APP_VERSION || 'v1.0';
 
 // Endpoint GET / trả về tên app và version 
 app.get('/', (req, res) => {
-  res.send(`<h1>Hello WORLD!- Test GITOPS Thành Công!</h1><p>App Name: Demo App</p><p>Version: ${VERSION}</p>`);
+  res.send(`<h1>Hello WORLD!dfdg- Test GITOPS Thành Công!</h1><p>App Name: Demo App</p><p>Version: ${VERSION}</p>`);
 });
 
 // Endpoint GET /health trả về {status: ok} 
