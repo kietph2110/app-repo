@@ -18,8 +18,8 @@ app.get('/health', (req, res) => {
 app.listen(port, () => {
   console.log(`App listening at http://localhost:${port}`);
 
-  // Cố tình chèn lỗi Runtime để phá sập tiến trình Node.js
-  //throw new Error("Crash App - Mo phong loi he thong!");
+  
+ throw new Error(" Mo phong loi he thong!");
   
 });
 //TEST CI FLOW
