@@ -7,7 +7,7 @@ const VERSION = process.env.APP_VERSION || 'v1.0';
 
 // Endpoint GET / trả về tên app và version 
 app.get('/', (req, res) => {
-  res.send(`<h1>Hello World - Test Auto CI/CD Thành Công!</h1><p>App Name: Demo App</p><p>Version: ${VERSION}</p>`);
+  res.send(`<h1>Hello 1234 - Test Auto CI/CD Thành Công!</h1><p>App Name: Demo App</p><p>Version: ${VERSION}</p>`);
 });
 
 // Endpoint GET /health trả về {status: ok} 
@@ -19,7 +19,7 @@ app.listen(port, () => {
   console.log(`App listening at http://localhost:${port}`);
 
   
- throw new Error(" Mo phong loi he thong!");
+ //throw new Error(" Mo phong loi he thong!");
   
 });
 //TEST CI FLOW
